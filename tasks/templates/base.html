@@ -6,6 +6,28 @@
     <title>django crud</title>
 </head>
 <body>
+    <nav>
+        <ul>
+            <li>
+                <a href="/">HOME</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li>
+                <a href="/tasks">tasks</a>
+            </li>
+            <li>
+                <a href="/logout">logout</a>
+            </li>
+            {% else %}
+            <li>
+                <a href="/signup">signup</a>
+            </li>
+                <a href="/signin">signin</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
     {% block content %}
     {% endblock %}
 </body>
