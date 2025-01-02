@@ -2,6 +2,28 @@
 
 
 {% block content %}
-<h1>tasks</h1>
+<h1>Task</h1>
+
+
+<ul>
+    {% for task in tasks %}
+    <li>
+        {% if task.important %}
+        <strong>{{task.title}}</strong>
+        {% else %}
+            {{task.title}}
+        {% endif %}
+        <p>{{task.description}}</p>
+        <p>{{task.user.username}}</p>
+       
+
+    </li>
+    {% endfor%}
+</ul>
+
+
+
+
+
 {% endblock %}
 

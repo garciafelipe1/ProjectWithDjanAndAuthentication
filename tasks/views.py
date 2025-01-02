@@ -1,10 +1,11 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login,logout,authenticate
 from http.client import HTTPResponse
-
+from .forms import TaskForm
+from .models import Task
 
 # Create your views here.
 def home(request):
@@ -38,7 +39,40 @@ def signup(request):
     )
 
 def tasks(request):
-    return render(request, 'tasks.html')
+    tasks = Task.objects.filter(user=request.user )  # Cambié 'task' a 'tasks' para ser consistente
+    
+    return render(request, 'tasks.html', {
+        'tasks': tasks  # Pasamos 'tasks' correctamente al contexto
+    })
+
+
+def create_task(request):
+
+
+    if request.method == 'GET':
+        return render(request, 'create_task.html',{
+            'form': TaskForm
+        })
+    else: 
+        try:
+            form= TaskForm(request.POST)
+            new_task=form.save(commit=False)
+            new_task.user =request.user
+            new_task.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html',{
+                'form': TaskForm,
+                'error': 'please provide valid dates'
+            })
+
+def task_detail(request,task_id):
+    task=get_object_or_404(Task,pk=task_id)
+    return render(request, 'task_detail.html',{
+        'task': task
+    })
+
+
 
 def signout(request):
     logout(request)
