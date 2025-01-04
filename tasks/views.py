@@ -8,6 +8,8 @@ from .forms import TaskForm
 from .models import Task
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+
+
 # Create your views here.
 def home(request):
     return render(request, "home.html")
@@ -39,6 +41,8 @@ def signup(request):
         {"form": UserCreationForm, "error": "PASSWORD Do not match"},
     )
 
+
+@login_required
 def tasks(request):
     if request.user.is_authenticated:
         tasks = Task.objects.filter(user=request.user)
@@ -47,6 +51,7 @@ def tasks(request):
 
     return render(request, 'tasks.html', {'tasks': tasks, 'user_authenticated': request.user.is_authenticated})
 
+@login_required
 def create_task(request):
 
 
@@ -67,6 +72,10 @@ def create_task(request):
                 'error': 'please provide valid dates'
             })
 
+
+
+
+@login_required
 def task_detail(request,task_id):
     if request.method == 'GET':
         task = get_object_or_404(Task, pk=task_id, user=request.user)
@@ -86,7 +95,7 @@ def task_detail(request,task_id):
             })
 
 
-
+@login_required
 def signout(request):
     logout(request)
     return redirect('home')
@@ -119,9 +128,15 @@ def complete_task(request, task_id):
     task.save()
     return redirect('tasks')
 
-
+@login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
       task.delete()
       return redirect('tasks')
+  
+  
+@login_required
+def tasks_completed(request):
+    tasks = Task.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
+    return render(request, 'tasks.html', {'tasks': tasks})
