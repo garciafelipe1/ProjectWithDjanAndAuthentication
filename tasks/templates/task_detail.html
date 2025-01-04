@@ -3,4 +3,28 @@
 
 {% block content %}
     <h1>{{task.tittle}}</h1>
+
+        {{error}}
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button>
+            update
+        </button>
+    </form>
+
+    
+        <form action="{% url 'complete_task' task.id %}" method="POST">
+            {% csrf_token %}
+            <button>
+                COMPLETE
+            </button>
+        </form>
+    
+        <form action="{% url 'delete_task' task.id %}" method="POST">
+            {% csrf_token %}
+            <button>
+                delete  
+            </button>
+        </form>
 {% endblock %}

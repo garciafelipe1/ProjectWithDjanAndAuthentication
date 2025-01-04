@@ -6,7 +6,8 @@ from django.contrib.auth import login,logout,authenticate
 from http.client import HTTPResponse
 from .forms import TaskForm
 from .models import Task
-
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 # Create your views here.
 def home(request):
     return render(request, "home.html")
@@ -39,12 +40,12 @@ def signup(request):
     )
 
 def tasks(request):
-    tasks = Task.objects.filter(user=request.user )  # Cambié 'task' a 'tasks' para ser consistente
-    
-    return render(request, 'tasks.html', {
-        'tasks': tasks  # Pasamos 'tasks' correctamente al contexto
-    })
+    if request.user.is_authenticated:
+        tasks = Task.objects.filter(user=request.user)
+    else:
+        tasks = None  # O una lista vacía []
 
+    return render(request, 'tasks.html', {'tasks': tasks, 'user_authenticated': request.user.is_authenticated})
 
 def create_task(request):
 
@@ -67,10 +68,22 @@ def create_task(request):
             })
 
 def task_detail(request,task_id):
-    task=get_object_or_404(Task,pk=task_id)
-    return render(request, 'task_detail.html',{
-        'task': task
-    })
+    if request.method == 'GET':
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
+        form = TaskForm(instance=task)
+        return render(request, 'task_detail.html', {'task': task, 'form': form})
+    else: 
+        try:
+            task=get_object_or_404(Task, pk=task_id, user=request.user)
+            form=TaskForm(request.POST, instance=task)
+            form.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'task_detail.html',{
+                'task': task,
+                'form': form,
+                'error': 'error updating '
+            })
 
 
 
@@ -95,3 +108,20 @@ def signin(request):
             login(request, user)
             return redirect('tasks')
     
+    
+def complete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.datecompleted = timezone.now()
+        task.save()
+        return redirect('tasks')
+    task.complete = True
+    task.save()
+    return redirect('tasks')
+
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+      task.delete()
+      return redirect('tasks')
