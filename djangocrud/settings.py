@@ -25,7 +25,9 @@ if not SECRET_KEY:
 DEBUG = 'RENDER' not in os.environ
 
 # Allowed hosts configuration
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    
+]
 RENDER_EXTERNAL_HOST = os.environ.get('RENDER_EXTERNAL_HOST')
 if RENDER_EXTERNAL_HOST:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOST)
@@ -74,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'djangocrud.wsgi.application'
+WSGI_APPLICATION = 'djangocrud.wsgi.application'        
 
 # Database configuration
 DATABASES = {
