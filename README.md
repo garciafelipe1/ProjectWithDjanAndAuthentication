@@ -1,3 +1,5 @@
-<H1>Este es un proyecto de tareas muy sencillo, pero me enfoque en el aprendisaje de Django</H1>
+<h1 style="color: #2c3e50; text-align: center; font-family: 'Roboto', sans-serif; font-weight: 500; line-height: 1.5; margin-top: 30px;">
+    Este proyecto de tareas, aunque sencillo en su alcance, está enfocado en consolidar el aprendizaje y la práctica de Django.
+</h1>
 
 https://projectwithdjanandauthentication.onrender.com
